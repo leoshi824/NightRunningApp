@@ -1,41 +1,62 @@
 package slw.nightrunning
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Context
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.Color
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.location.LocationManager.GPS_PROVIDER
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.support.v4.app.ActivityCompat.requestPermissions
+import android.support.v4.content.ContextCompat.checkSelfPermission
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import com.baidu.mapapi.map.CircleOptions
+import com.baidu.mapapi.map.MapStatusUpdateFactory
+import com.baidu.mapapi.map.PolylineOptions
+import com.baidu.mapapi.model.LatLng
+import com.baidu.mapapi.utils.CoordinateConverter
+import com.baidu.mapapi.utils.CoordinateConverter.CoordType.GPS
 import kotlinx.android.synthetic.main.activity_main.*
-import slw.nightrunning.RecordState.*
+import slw.nightrunning.RunningState.*
 
 class MainActivity : AppCompatActivity() {
+
+    private val running = Running()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mapView.onCreate(this, savedInstanceState)
 
-        val record = Record()
-        record.stateListener = { state ->
+        running.stateListener = { state ->
             when (state) {
                 Ready -> {
                     controlButton.text = "Start"
                     controlButton.setOnClickListener {
-                        record.state = InProcess
+                        running.state = InProcess
                     }
                 }
                 InProcess -> {
                     controlButton.text = "Stop"
                     controlButton.setOnClickListener {
-                        record.state = Stopped
+                        running.state = Stopped
                     }
                 }
                 Stopped -> {
                     controlButton.text = "Reset"
                     controlButton.setOnClickListener {
-                        record.state = Ready
+                        running.state = Ready
                     }
                 }
             }
         }
+
+        requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), 0)
 
     }
 
@@ -58,5 +79,49 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         mapView.onDestroy()
     }
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 0) {
+            if (checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+                val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                locationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 5f, object : LocationListener {
+                    override fun onLocationChanged(location: Location) = this@MainActivity.onLocationChanged(location)
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                    override fun onProviderEnabled(provider: String?) {}
+                    override fun onProviderDisabled(provider: String?) {}
+                })
+            } else {
+                AlertDialog.Builder(this)
+                    .setTitle("Location not accessible!")
+                    .setMessage("Not granted permission to access location! This app will not work properly!")
+                    .setPositiveButton("All right!") { _, _ ->
+                        requestPermissions(this, arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION), 0)
+                    }
+                    .setNegativeButton("No way!") { _, _ -> finish() }
+                    .show()
+            }
+        }
+    }
+
+    private fun onLocationChanged(location: Location) {
+        if (running.state == InProcess) running.route.add(location)
+        val latLng = locationToLatLng(location)
+        mapView.map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
+
+        mapView.map.clear()
+        if (running.route.size >= 2) {
+            mapView.map.addOverlay(
+                PolylineOptions().points(running.route.map { loc -> locationToLatLng(loc) })
+                    .color(Color.BLUE).width(7)
+            )
+        }
+
+        mapView.map.addOverlay(CircleOptions().center(latLng).radius(10).fillColor(Color.RED))
+    }
+
+    private fun locationToLatLng(location: Location) = CoordinateConverter().from(GPS)
+        .coord(LatLng(location.latitude, location.longitude)).convert()
 
 }
