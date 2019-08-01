@@ -5,6 +5,10 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -57,6 +61,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), 0)
+
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager.registerListener(object : SensorEventListener {
+            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+            override fun onSensorChanged(event: SensorEvent) {
+                val nowStepCount = event.values[0].toInt()
+                if (running.state == InProcess) {
+                    if (running.startStepCount == -1) running.startStepCount = nowStepCount
+                    running.stopStepCount = nowStepCount
+                }
+                val stepCount = running.stopStepCount - running.startStepCount
+                infoTextView.text = "stepCount=$stepCount"
+            }
+        }, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_NORMAL)
 
     }
 

@@ -23,5 +23,7 @@ class Running {
 
     val route: ArrayList<Location> = arrayListOf()
 
+    var startStepCount: Int = -1
+    var stopStepCount: Int = -1
 
 }
