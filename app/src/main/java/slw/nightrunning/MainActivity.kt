@@ -3,6 +3,7 @@ package slw.nightrunning
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
 import android.hardware.Sensor
@@ -37,6 +38,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mapView.onCreate(this, savedInstanceState)
 
+        settingsButton.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
         running.stateListener = { state ->
             when (state) {
                 Ready -> {
@@ -70,9 +75,8 @@ class MainActivity : AppCompatActivity() {
                 if (running.state == InProcess) {
                     if (running.startStepCount == -1) running.startStepCount = nowStepCount
                     running.stopStepCount = nowStepCount
+                    updateInfoText()
                 }
-                val stepCount = running.stopStepCount - running.startStepCount
-                infoTextView.text = "stepCount=$stepCount"
             }
         }, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_NORMAL)
 
@@ -125,6 +129,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun onLocationChanged(location: Location) {
         if (running.state == InProcess) running.route.add(location)
+
+        updateInfoText()
+
         val latLng = locationToLatLng(location)
         mapView.map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
 
@@ -141,5 +148,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun locationToLatLng(location: Location) = CoordinateConverter().from(GPS)
         .coord(LatLng(location.latitude, location.longitude)).convert()
+
+
+    private fun updateInfoText() {
+        val stepCount = running.stopStepCount - running.startStepCount
+
+        var routeLength = 0.0
+        for (i in (0 until running.route.size - 1)) {
+            routeLength += running.route[i].distanceTo(running.route[i + 1])
+        }
+
+        infoTextView.text = "stepCount=$stepCount\nrouteLength=$routeLength"
+    }
 
 }
