@@ -16,6 +16,11 @@ class Running {
 
     var state: RunningState = RunningState.Ready
         set(newState) {
+            if (newState == RunningState.Ready) {
+                route.clear()
+                startStepCount = -1
+                stopStepCount = -1
+            }
             stateListener?.invoke(newState)
             field = newState
         }
