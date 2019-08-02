@@ -1,5 +1,6 @@
 package slw.nightrunning
 
+import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import android.Manifest.permission.SEND_SMS
 import android.Manifest.permission.CALL_PHONE
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.support.v4.app.ActivityCompat
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -24,7 +26,7 @@ class SettingsActivity : AppCompatActivity() {
             emergencyContactNumberField.isEnabled = isChecked
             emergencyContactMessageField.isEnabled = isChecked
             if (isChecked) {
-                // todo request permissions
+                       ActivityCompat.requestPermissions(this, arrayOf(SEND_SMS,CALL_PHONE), 0)
             }
         }
     }
@@ -48,8 +50,9 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // todo check if permissions all granted
-        // if all granted: do nothing
-        // else turn the emergencyContactEnabledCheckBox to unchecked
+        if (checkSelfPermission(this, Manifest.permission.SEND_SMS) != PERMISSION_GRANTED ||
+            checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PERMISSION_GRANTED)
+            emergencyContactEnabledCheckBox.isChecked = false
+
     }
 }
