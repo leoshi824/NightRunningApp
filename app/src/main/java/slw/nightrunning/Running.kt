@@ -28,7 +28,12 @@ class Running {
 
     val route: ArrayList<Location> = arrayListOf()
 
+
     var startStepCount: Int = -1
     var stopStepCount: Int = -1
+    val stepCount get() = (stopStepCount - startStepCount)
+
+
+    fun toLog(): RunningLog = RunningLog(stepCount, route)
 
 }

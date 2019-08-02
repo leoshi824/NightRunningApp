@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                 InProcess -> {
                     controlButton.text = "Stop"
                     controlButton.setOnClickListener {
+                        saveRunningLog()
                         running.state = Stopped
                     }
                 }
@@ -151,7 +152,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun updateInfoText() {
-        val stepCount = running.stopStepCount - running.startStepCount
+        val stepCount = running.stepCount
 
         var routeLength = 0.0
         for (i in (0 until running.route.size - 1)) {
@@ -159,6 +160,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         infoTextView.text = "stepCount=$stepCount\nrouteLength=$routeLength"
+    }
+
+
+    private fun saveRunningLog() {
+        val runningLog = running.toLog()
+        getFileStreamPath(runningLog.filename).outputStream().use { outputStream ->
+            outputStream.writeRunningLog(runningLog)
+        }
     }
 
 }
