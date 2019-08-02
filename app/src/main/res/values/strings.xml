@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NightRunningApp</string>
+    <string name="default_emergency_contact_message">I met some trouble!</string>
 </resources>

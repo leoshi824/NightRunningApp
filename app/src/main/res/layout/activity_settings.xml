@@ -7,15 +7,34 @@
     tools:context=".SettingsActivity">
 
     <TextView
-        android:id="@+id/emergencyContactNumberLabel"
+        android:id="@+id/emergencyContactTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Emergency contact number:"
+        android:text="Emergency contact:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/emergencyContactEnabledCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Emergency contact enabled"
+        app:layout_constraintStart_toStartOf="@+id/emergencyContactTitle"
+        app:layout_constraintTop_toBottomOf="@+id/emergencyContactTitle" />
+
+    <TextView
+        android:id="@+id/emergencyContactNumberLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Emergency contact number:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="@+id/emergencyContactTitle"
+        app:layout_constraintTop_toBottomOf="@id/emergencyContactEnabledCheckBox" />
 
     <EditText
         android:id="@+id/emergencyContactNumberField"
@@ -29,5 +48,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/emergencyContactNumberLabel"
         app:layout_constraintTop_toBottomOf="@+id/emergencyContactNumberLabel" />
+
+    <TextView
+        android:id="@+id/emergencyContactMessageLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Emergency contact number:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="@+id/emergencyContactTitle"
+        app:layout_constraintTop_toBottomOf="@id/emergencyContactNumberField" />
+
+    <EditText
+        android:id="@+id/emergencyContactMessageField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="Message to send"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/emergencyContactMessageLabel"
+        app:layout_constraintTop_toBottomOf="@+id/emergencyContactMessageLabel" />
 
 </android.support.constraint.ConstraintLayout>
