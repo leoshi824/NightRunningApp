@@ -21,20 +21,28 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
         settingsPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
         emergencyContactEnabledCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            emergencyContactNumberField.isEnabled = isChecked
-            emergencyContactMessageField.isEnabled = isChecked
             if (isChecked) {
                 requestPermissions(this, arrayOf(SEND_SMS, CALL_PHONE), 0)
+            } else {
+                emergencyContactNumberField.isEnabled = false
+                emergencyContactMessageField.isEnabled = false
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         emergencyContactEnabledCheckBox.isChecked = settingsPreferences.getBoolean("emergencyContactEnabled", false)
         emergencyContactNumberField.setText(settingsPreferences.getString("emergencyContactNumber", ""))
         val defaultMessage = getString(R.string.default_emergency_contact_message)
         emergencyContactMessageField.setText(settingsPreferences.getString("emergencyContactMessage", defaultMessage))
+
+        if (emergencyContactEnabledCheckBox.isChecked) {
+            requestPermissions(this, arrayOf(SEND_SMS, CALL_PHONE), 0)
+        } else {
+            emergencyContactNumberField.isEnabled = false
+            emergencyContactMessageField.isEnabled = false
+        }
     }
 
     override fun onStop() {
@@ -50,8 +58,10 @@ class SettingsActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (checkSelfPermission(this, SEND_SMS) != PERMISSION_GRANTED ||
             checkSelfPermission(this, CALL_PHONE) != PERMISSION_GRANTED
-        )
-            emergencyContactEnabledCheckBox.isChecked = false
-
+        ) emergencyContactEnabledCheckBox.isChecked = false
+        else {
+            emergencyContactNumberField.isEnabled = true
+            emergencyContactMessageField.isEnabled = true
+        }
     }
 }
