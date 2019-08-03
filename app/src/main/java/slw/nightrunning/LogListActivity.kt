@@ -12,10 +12,14 @@ class LogListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log_list)
+    }
 
+    override fun onStart() {
+        super.onStart()
         val dir = getDir("runningLogs", Context.MODE_PRIVATE)
-        val filenames = dir.listFiles().map { it.name }
-        logListView.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, filenames)
+        val filenames = dir.listFiles().reversed().map { it.name }
+        val fileDescription = filenames.map { it.parseAsRunningLogFilename().timeSpanDescription() }
+        logListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, fileDescription)
         logListView.setOnItemClickListener { _, _, position, _ ->
             val filename = filenames[position]
             val intent = Intent(this, LogActivity::class.java)
