@@ -163,6 +163,7 @@ class MainActivity : AppCompatActivity() {
         nowLocation?.run { stringBuilder.append(getString(R.string.info_gps, latitude, longitude, altitude)) }
         if (isRunning) {
             val timeString = runningRoute.timeSpan.timeDescription()
+            stringBuilder.appendln()
             stringBuilder.append(getString(R.string.info_run, timeString, runningStepCount, runningRoute.geoLength))
         }
         infoTextView.text = stringBuilder
