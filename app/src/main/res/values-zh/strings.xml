@@ -14,9 +14,11 @@
     <string name="emergency_contact_phone_number">紧急联系电话</string>
     <string name="emergency_message">紧急联系信息</string>
     <string name="emergency_message_hint">紧急联系信息的内容</string>
-    <string name="emergency_phone_number_hint">+XX XXX-XXXX-XXXX</string>
+    <string name="emergency_phone_number_hint">+86 XXX-XXXX-XXXX</string>
     <string name="got_few_data">此次运动过于短暂，不会被记录</string>
     <string name="history">历史记录</string>
     <string name="long_click_to_make_emergency_call">长按拨打紧急联系电话</string>
     <string name="settings">设置</string>
+    <string name="info_gps">纬度：%.6f°\n经度：%.6f°\n海拔：%.0f米</string>
+    <string name="info_run">时长：%s\n步数：%d\n路程：%.0f米</string>
 </resources>

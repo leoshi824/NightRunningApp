@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LogListActivity::class.java))
         }
 
-
     }
 
     override fun onResume() {
@@ -160,17 +159,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateInfoText() = binder?.run {
-        var string = ""
-        nowLocation?.run {
-            string += "latitude=$latitude\n" +
-                    "longitude=$longitude\n" +
-                    "altitude=$altitude\n"
-        }
+        val stringBuilder = StringBuilder()
+        nowLocation?.run { stringBuilder.append(getString(R.string.info_gps, latitude, longitude, altitude)) }
         if (isRunning) {
-            string += "nowStepCount=$runningStepCount\n" +
-                    "routeLength=${runningRoute.geoLength}"
+            val timeString = runningRoute.timeSpan.timeDescription()
+            stringBuilder.append(getString(R.string.info_run, timeString, runningStepCount, runningRoute.geoLength))
         }
-        infoTextView.text = string
+        infoTextView.text = stringBuilder
     }
 
     private fun updateMapView() = binder?.run {

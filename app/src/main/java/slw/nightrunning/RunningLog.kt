@@ -7,19 +7,24 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.*
+import java.util.Calendar.getInstance
 
 
-data class RunningLog(val stepCount: Int, val route: List<Location>) {
-    val startTime get() = route.first().time
-    val stopTime get() = route.last().time
-    val timeSpan get() = stopTime - startTime
+data class RunningLog(val stepCount: Int, val route: List<Location>)
+
+val RunningLog.filename get() = route.run { "${first().time}-${last().time}" }
+
+fun String.parseAsRunningLogFilename(): Pair<Calendar, Calendar> {
+    val timeList = split("-").map { getInstance().apply { timeInMillis = it.toLong() } }
+    return Pair(timeList[0], timeList[1])
 }
 
 const val version = 1
 
 fun Context.saveRunningLog(runningLog: RunningLog): String? {
     val dir = getDir("runningLogs", Context.MODE_PRIVATE)
-    val filename = "${runningLog.startTime}-${runningLog.stopTime}"
+    val filename = runningLog.filename
     val file = dir.resolve(filename)
     return try {
         file.outputStream().use { it.writeRunningLog(runningLog) }

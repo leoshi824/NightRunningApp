@@ -33,10 +33,13 @@ class LogActivity : AppCompatActivity() {
             addLocationPoint(latLng)
         }
 
-        titleTextView.text = filename
-        infoTextView.text = "timeSpan=${runningLog.timeSpan}\n" +
-                "nowStepCount=${runningLog.stepCount}\n" +
-                "routeLength=${runningLog.route.geoLength}"
+        titleTextView.text = filename.parseAsRunningLogFilename().timeSpanDescription()
+
+        infoTextView.text = runningLog.run {
+            val timeString = route.timeSpan.timeDescription()
+            getString(R.string.info_run, timeString, stepCount, route.geoLength)
+        }
+
         deleteButton.setOnClickListener {
             deleteRunningLog(filename)
             finish()
