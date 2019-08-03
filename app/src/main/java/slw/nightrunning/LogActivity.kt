@@ -35,7 +35,7 @@ class LogActivity : AppCompatActivity() {
 
         titleTextView.text = filename
         infoTextView.text = "timeSpan=${runningLog.timeSpan}\n" +
-                "stepCount=${runningLog.stepCount}\n" +
+                "nowStepCount=${runningLog.stepCount}\n" +
                 "routeLength=${runningLog.route.geoLength}"
         deleteButton.setOnClickListener {
             deleteRunningLog(filename)

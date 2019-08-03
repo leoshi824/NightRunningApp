@@ -1,37 +1,31 @@
 package slw.nightrunning
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.graphics.Color
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.location.LocationManager.GPS_PROVIDER
+import android.net.Uri
 import android.os.Bundle
+import android.os.IBinder
 import android.os.PersistableBundle
 import android.support.v4.app.ActivityCompat.requestPermissions
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import com.baidu.mapapi.map.CircleOptions
+import android.telephony.SmsManager
+import android.view.View
+import android.widget.Toast
 import com.baidu.mapapi.map.MapStatusUpdateFactory
-import com.baidu.mapapi.map.PolylineOptions
-import com.baidu.mapapi.model.LatLng
-import com.baidu.mapapi.utils.CoordinateConverter
-import com.baidu.mapapi.utils.CoordinateConverter.CoordType.GPS
 import kotlinx.android.synthetic.main.activity_main.*
-import slw.nightrunning.RunningState.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val running = Running()
+
+    // lifecycle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,46 +35,36 @@ class MainActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-
-        running.stateListener = { state ->
-            when (state) {
-                Ready -> {
-                    controlButton.text = "Start"
-                    controlButton.setOnClickListener {
-                        running.state = InProcess
-                    }
-                }
-                InProcess -> {
-                    controlButton.text = "Stop"
-                    controlButton.setOnClickListener {
-                        saveRunningLog()
-                        running.state = Stopped
-                    }
-                }
-                Stopped -> {
-                    controlButton.text = "Reset"
-                    controlButton.setOnClickListener {
-                        running.state = Ready
-                    }
-                }
-            }
+        logListButton.setOnClickListener {
+            startActivity(Intent(this, LogListActivity::class.java))
         }
 
-        requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), 0)
+    }
 
-        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        sensorManager.registerListener(object : SensorEventListener {
-            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
-            override fun onSensorChanged(event: SensorEvent) {
-                val nowStepCount = event.values[0].toInt()
-                if (running.state == InProcess) {
-                    if (running.startStepCount == -1) running.startStepCount = nowStepCount
-                    running.stopStepCount = nowStepCount
-                    updateInfoText()
-                }
+    override fun onStart() {
+        super.onStart()
+
+        val settingsPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        if (settingsPreferences.getBoolean("emergencyContactEnabled", false)) {
+            emergencyButton.visibility = View.VISIBLE
+            emergencyButton.setOnClickListener {
+                Toast.makeText(this, "Long click to make the emergency call!", Toast.LENGTH_LONG).show()
             }
-        }, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_NORMAL)
+            emergencyButton.setOnLongClickListener {
+                val number = settingsPreferences.getString("emergencyContactNumber", "") ?: ""
+                val defaultMessage = getString(R.string.default_emergency_contact_message)
+                var message = settingsPreferences.getString("emergencyContactMessage", defaultMessage) ?: ""
+                binder?.nowLocation?.let { location -> message += "\n" + location.toString() }
+                emergencyCall(number, message)
+                false
+            }
+        } else {
+            emergencyButton.visibility = View.GONE
+        }
 
+
+
+        startServiceWithPermissionRequest()
     }
 
     override fun onResume() {
@@ -101,73 +85,143 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+        stopService()
     }
 
+
+    // service & binder
+
+    var binder: MainServiceBinder? = null
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            binder = (service as MainServiceBinder).apply {
+                onStateUpdated = this@MainActivity::updateButton
+                onStepCountUpdated = {
+                    updateInfoText()
+                }
+                onLocationUpdated = {
+                    updateMapView()
+                    updateInfoText()
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            binder?.run {
+                onStateUpdated = null
+                onStepCountUpdated = null
+                onLocationUpdated = null
+            }
+            binder = null
+        }
+    }
+
+    private fun startService(): Boolean {
+        if (checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+            startService(Intent(this, MainService::class.java))
+            bindService(Intent(this, MainService::class.java), serviceConnection, 0)
+            return true
+        }
+        return false
+    }
+
+    private fun stopService() {
+        val isRunning = binder?.isRunning ?: false
+        unbindService(serviceConnection)
+        if (!isRunning) stopService(Intent(this, MainService::class.java))
+    }
+
+    private fun startServiceWithPermissionRequest(): Boolean {
+        val succeed = startService()
+        if (!succeed) requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), 0)
+        return succeed
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 0) {
-            if (checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
-                val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                locationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 5f, object : LocationListener {
-                    override fun onLocationChanged(location: Location) = this@MainActivity.onLocationChanged(location)
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-                    override fun onProviderEnabled(provider: String?) {}
-                    override fun onProviderDisabled(provider: String?) {}
-                })
-            } else {
+            if (!startService()) {
                 AlertDialog.Builder(this)
                     .setTitle("Location not accessible!")
-                    .setMessage("Not granted permission to access location! This app will not work properly!")
-                    .setPositiveButton("All right!") { _, _ ->
-                        requestPermissions(this, arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION), 0)
-                    }
+                    .setMessage("Not granted permission to access nowLocation! This app will not work properly!")
+                    .setPositiveButton("All right!") { _, _ -> startServiceWithPermissionRequest() }
                     .setNegativeButton("No way!") { _, _ -> finish() }
                     .show()
             }
         }
     }
 
-    private fun onLocationChanged(location: Location) {
-        if (running.state == InProcess) running.route.add(location)
 
-        updateInfoText()
+    // views
 
-        val latLng = locationToLatLng(location)
-        mapView.map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
-
-        mapView.map.clear()
-        if (running.route.size >= 2) {
-            mapView.map.addOverlay(
-                PolylineOptions().points(running.route.map { loc -> locationToLatLng(loc) })
-                    .color(Color.BLUE).width(7)
-            )
+    private fun updateButton(isRunning: Boolean) {
+        if (!isRunning) {
+            controlButton.text = "Start"
+            controlButton.setOnClickListener {
+                binder?.startRunning()
+            }
+        } else {
+            controlButton.text = "Stop"
+            controlButton.setOnClickListener {
+                saveRunningLogWithCheck()
+                binder?.stopRunning()
+            }
         }
-
-        mapView.map.addOverlay(CircleOptions().center(latLng).radius(10).fillColor(Color.RED))
     }
-
-    private fun locationToLatLng(location: Location) = CoordinateConverter().from(GPS)
-        .coord(LatLng(location.latitude, location.longitude)).convert()
-
 
     private fun updateInfoText() {
-        val stepCount = running.stepCount
-
-        var routeLength = 0.0
-        for (i in (0 until running.route.size - 1)) {
-            routeLength += running.route[i].distanceTo(running.route[i + 1])
+        binder?.run {
+            if (isRunning) {
+                titleTextView.text = "You are running"
+            } else {
+                titleTextView.text = "Let's start running!"
+            }
+            infoTextView.text = "" +
+                    "nowStepCount=$runningStepCount\n" +
+                    "routeLength=${runningRoute.geoLength}"
         }
+    }
 
-        infoTextView.text = "stepCount=$stepCount\nrouteLength=$routeLength"
+    private fun updateMapView() {
+        binder?.run {
+            nowLocation?.let { location ->
+                val latLng = location.toLatLng()
+                mapView.map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
+                mapView.map.addLocation(latLng)
+            }
+            mapView.map.clear()
+            runningRoute.takeIf { it.size >= 2 }?.let { route ->
+                mapView.map.addRoute(route.map(Location::toLatLng))
+            }
+        }
     }
 
 
-    private fun saveRunningLog() {
-        val runningLog = running.toLog()
-        getFileStreamPath(runningLog.filename).outputStream().use { outputStream ->
-            outputStream.writeRunningLog(runningLog)
+    // other actions
+
+    private fun saveRunningLogWithCheck(): Boolean {
+        val log = binder?.stopRunning() ?: return false
+        if (log.route.size < 2) {
+            Toast.makeText(this, "Got too few data. This log will not be saved.", Toast.LENGTH_LONG)
+                .show()
+            return false
         }
+        val filename = saveRunningLog(log) ?: return false
+        val intent = Intent(this, LogActivity::class.java)
+        intent.putExtra("filename", filename)
+        startActivity(intent)
+        return true
+    }
+
+    private fun emergencyCall(number: String, message: String) {
+        val smsIntent = Intent("com.android.TinySMS.RESULT")
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, smsIntent, PendingIntent.FLAG_ONE_SHOT)
+        SmsManager.getDefault().sendTextMessage(number, null, message, pendingIntent, null)
+
+        val phoneIntent = Intent(Intent.ACTION_CALL)
+        phoneIntent.data = Uri.parse("tel:$number")
+        startActivity(phoneIntent)
     }
 
 }
