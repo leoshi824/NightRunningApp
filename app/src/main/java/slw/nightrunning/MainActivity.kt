@@ -1,7 +1,6 @@
 package slw.nightrunning
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -30,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        startServiceWithPermissionRequest()
+
         mapView.onCreate(this, savedInstanceState)
 
         settingsButton.setOnClickListener {
@@ -40,27 +41,18 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LogListActivity::class.java))
         }
 
-    }
 
-    override fun onStart() {
-        super.onStart()
-        updateEmergencyButton()
-        startServiceWithPermissionRequest()
     }
 
     override fun onResume() {
         super.onResume()
         mapView.onResume()
+        updateEmergencyButton()
     }
 
     override fun onPause() {
         super.onPause()
         mapView.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        stopService()
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
@@ -71,6 +63,8 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+        stopService()
+
     }
 
 
@@ -233,13 +227,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeEmergencyCall(number: String, message: String) {
-        val smsIntent = Intent("com.android.TinySMS.RESULT")
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, smsIntent, PendingIntent.FLAG_ONE_SHOT)
-        SmsManager.getDefault().sendTextMessage(number, null, message, pendingIntent, null)
-
-        val phoneIntent = Intent(Intent.ACTION_CALL)
-        phoneIntent.data = Uri.parse("tel:$number")
-        startActivity(phoneIntent)
+        SmsManager.getDefault().sendTextMessage(number, null, message, null, null)
+        startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$number")))
     }
 
 }
