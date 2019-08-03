@@ -26,7 +26,7 @@ fun Location.toLatLng(): LatLng {
         .convert()
 }
 
-fun BaiduMap.addLocation(latLng: LatLng) {
+fun BaiduMap.addLocationPoint(latLng: LatLng) {
     val circleOptions = CircleOptions()
         .center(latLng)
         .radius(10)
@@ -34,7 +34,7 @@ fun BaiduMap.addLocation(latLng: LatLng) {
     addOverlay(circleOptions)
 }
 
-fun BaiduMap.addRoute(route: List<LatLng>) {
+fun BaiduMap.addRouteLines(route: List<LatLng>) {
     val polylineOptions = PolylineOptions()
         .points(route)
         .color(Color.BLUE)

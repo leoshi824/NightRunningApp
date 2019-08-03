@@ -14,6 +14,7 @@ import android.hardware.SensorManager.SENSOR_DELAY_NORMAL
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.location.LocationManager.GPS_PROVIDER
 import android.os.Binder
 import android.os.Bundle
 import android.support.v4.content.ContextCompat.checkSelfPermission
@@ -27,7 +28,8 @@ class MainService : Service() {
         val stepCountSensor = sensorManager.getDefaultSensor(TYPE_STEP_COUNTER)
         sensorManager.registerListener(stepCountListener, stepCountSensor, SENSOR_DELAY_NORMAL)
         if (checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5f, locationListener)
+            locationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 5f, locationListener)
+            locationListener.onLocationChanged(locationManager.getLastKnownLocation(GPS_PROVIDER))
         }
     }
 

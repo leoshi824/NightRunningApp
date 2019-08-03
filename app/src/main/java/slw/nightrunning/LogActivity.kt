@@ -29,8 +29,8 @@ class LogActivity : AppCompatActivity() {
 
             clear()
             setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
-            addRoute(latLngList)
-            addLocation(latLng)
+            addRouteLines(latLngList)
+            addLocationPoint(latLng)
         }
 
         titleTextView.text = filename

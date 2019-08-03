@@ -165,31 +165,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateInfoText() {
-        binder?.run {
-            var string = ""
-            nowLocation?.run {
-                string += "latitude=$latitude\n" +
-                        "longitude=$longitude\n" +
-                        "altitude=$altitude\n"
-            }
-            if (isRunning) {
-                string += "nowStepCount=$runningStepCount\n" +
-                        "routeLength=${runningRoute.geoLength}"
-            }
-            infoTextView.text = string
+    private fun updateInfoText() = binder?.run {
+        var string = ""
+        nowLocation?.run {
+            string += "latitude=$latitude\n" +
+                    "longitude=$longitude\n" +
+                    "altitude=$altitude\n"
         }
+        if (isRunning) {
+            string += "nowStepCount=$runningStepCount\n" +
+                    "routeLength=${runningRoute.geoLength}"
+        }
+        infoTextView.text = string
     }
 
-    private fun updateMapView() {
-        binder?.run {
+    private fun updateMapView() = binder?.run {
+        mapView.map.let { map ->
+            map.clear()
             nowLocation?.toLatLng()?.let { latLng ->
-                mapView.map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
-                mapView.map.addLocation(latLng)
+                map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
+                map.addLocationPoint(latLng)
             }
-            mapView.map.clear()
             runningRoute.takeIf { it.size >= 2 }?.let { route ->
-                mapView.map.addRoute(route.map(Location::toLatLng))
+                map.addRouteLines(route.map(Location::toLatLng))
             }
         }
     }
@@ -216,6 +214,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     // other actions
 
