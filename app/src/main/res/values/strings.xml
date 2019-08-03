@@ -5,8 +5,17 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="you_are_running">You are running</string>
-    <string name="lets_start_running">Let\'s start running!</string>
+    <string name="lets_start_running" translatable="false">Let\'s start running!</string>
     <string name="settings">Settings</string>
     <string name="log_list">Log List</string>
     <string name="emergency_call">EmergencyCall</string>
+    <string name="got_few_data">The running this time is too short to be saved.</string>
+    <string name="emergency_message_hint">Content of emergency message</string>
+    <string name="emergency_contact_phone_number">Emergency contact phone number:</string>
+    <string name="emergency_message">Emergency message:</string>
+    <string name="emergency_contact">Emergency contact:</string>
+    <string name="emergency_contact_enabled">Enable emergency contact</string>
+    <string name="emergency_phone_number_hint">+XX XXX-XXXX-XXXX</string>
+    <string name="long_click_to_make_emergency_call">Long click to make the emergency call!</string>
+    <string name="history">History</string>
 </resources>

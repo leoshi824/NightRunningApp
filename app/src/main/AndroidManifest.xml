@@ -17,24 +17,32 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="n9YGxLm6iu7ov9ATIDyCy7GgZyGPjwWD" />
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.Map">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service android:name=".MainService" />
 
-        <activity android:name=".LogActivity" />
-        <activity android:name=".LogListActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".LogActivity"
+            android:theme="@style/AppTheme.Map" />
 
+        <activity
+            android:name=".LogListActivity"
+            android:label="@string/history" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings" />
 
     </application>
 

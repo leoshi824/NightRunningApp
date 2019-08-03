@@ -3,7 +3,6 @@ package slw.nightrunning
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.PendingIntent
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -45,25 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-        val settingsPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
-        if (settingsPreferences.getBoolean("emergencyContactEnabled", false)) {
-            emergencyButton.visibility = View.VISIBLE
-            emergencyButton.setOnClickListener {
-                Toast.makeText(this, "Long click to make the emergency call!", Toast.LENGTH_LONG).show()
-            }
-            emergencyButton.setOnLongClickListener {
-                val number = settingsPreferences.getString("emergencyContactNumber", "") ?: ""
-                val defaultMessage = getString(R.string.default_emergency_contact_message)
-                var message = settingsPreferences.getString("emergencyContactMessage", defaultMessage) ?: ""
-                binder?.nowLocation?.let { location -> message += "\n" + location.toString() }
-                emergencyCall(number, message)
-                false
-            }
-        } else {
-            emergencyButton.visibility = View.GONE
-        }
-
+        updateEmergencyButton()
         startServiceWithPermissionRequest()
     }
 
@@ -98,9 +79,15 @@ class MainActivity : AppCompatActivity() {
     var binder: MainServiceBinder? = null
 
     private val serviceConnection = object : ServiceConnection {
+
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            binder = (service as MainServiceBinder).apply {
-                onStateUpdated = this@MainActivity::updateButton
+            service as MainServiceBinder
+            this@MainActivity.binder = service
+            service.apply {
+                onStateUpdated = {
+                    updateControlButton()
+                    updateInfoText()
+                }
                 onStepCountUpdated = {
                     updateInfoText()
                 }
@@ -119,6 +106,7 @@ class MainActivity : AppCompatActivity() {
             }
             binder = null
         }
+
     }
 
     private fun startService(): Boolean {
@@ -159,13 +147,16 @@ class MainActivity : AppCompatActivity() {
 
     // views
 
-    private fun updateButton(isRunning: Boolean) {
+    private fun updateControlButton() {
+        val isRunning = binder?.isRunning ?: false
         if (!isRunning) {
+            titleTextView.text = getString(R.string.lets_start_running)
             controlButton.text = getString(R.string.start)
             controlButton.setOnClickListener {
                 binder?.startRunning()
             }
         } else {
+            titleTextView.text = getString(R.string.you_are_running)
             controlButton.text = getString(R.string.stop)
             controlButton.setOnClickListener {
                 saveRunningLogWithCheck()
@@ -176,21 +167,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateInfoText() {
         binder?.run {
-            if (isRunning) {
-                titleTextView.text = getString(R.string.you_are_running)
-            } else {
-                titleTextView.text = getString(R.string.lets_start_running)
+            var string = ""
+            nowLocation?.run {
+                string += "latitude=$latitude\n" +
+                        "longitude=$longitude\n" +
+                        "altitude=$altitude\n"
             }
-            infoTextView.text = "" +
-                    "nowStepCount=$runningStepCount\n" +
-                    "routeLength=${runningRoute.geoLength}"
+            if (isRunning) {
+                string += "nowStepCount=$runningStepCount\n" +
+                        "routeLength=${runningRoute.geoLength}"
+            }
+            infoTextView.text = string
         }
     }
 
     private fun updateMapView() {
         binder?.run {
-            nowLocation?.let { location ->
-                val latLng = location.toLatLng()
+            nowLocation?.toLatLng()?.let { latLng ->
                 mapView.map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
                 mapView.map.addLocation(latLng)
             }
@@ -201,13 +194,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateEmergencyButton() = getSettingsPreferences().run {
+        if (!emergencyContactEnabled) {
+            emergencyButton.visibility = View.GONE
+        } else {
+            emergencyButton.visibility = View.VISIBLE
+            emergencyButton.setOnClickListener {
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.long_click_to_make_emergency_call),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            val phoneNumber = emergencyPhoneNumber
+            var message = emergencyMessage
+            emergencyButton.setOnLongClickListener {
+                binder?.nowLocation?.let { location -> message += "\n" + location.toString() }
+                makeEmergencyCall(phoneNumber, message)
+                false
+            }
+        }
+    }
 
     // other actions
 
     private fun saveRunningLogWithCheck(): Boolean {
         val log = binder?.stopRunning() ?: return false
         if (log.route.size < 2) {
-            Toast.makeText(this, "Got too few data. This log will not be saved.", Toast.LENGTH_LONG)
+            Toast.makeText(this, getString(R.string.got_few_data), Toast.LENGTH_LONG)
                 .show()
             return false
         }
@@ -218,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun emergencyCall(number: String, message: String) {
+    private fun makeEmergencyCall(number: String, message: String) {
         val smsIntent = Intent("com.android.TinySMS.RESULT")
         val pendingIntent = PendingIntent.getBroadcast(this, 0, smsIntent, PendingIntent.FLAG_ONE_SHOT)
         SmsManager.getDefault().sendTextMessage(number, null, message, pendingIntent, null)

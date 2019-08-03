@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Emergency contact:"
+        android:text="@string/emergency_contact"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,42 +22,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Emergency contact enabled"
+        android:text="@string/emergency_contact_enabled"
         app:layout_constraintStart_toStartOf="@+id/emergencyContactTitle"
         app:layout_constraintTop_toBottomOf="@+id/emergencyContactTitle" />
 
     <TextView
-        android:id="@+id/emergencyContactNumberLabel"
+        android:id="@+id/emergencyPhoneNumberLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Emergency contact number:"
+        android:text="@string/emergency_contact_phone_number"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="@+id/emergencyContactTitle"
         app:layout_constraintTop_toBottomOf="@id/emergencyContactEnabledCheckBox" />
 
     <EditText
-        android:id="@+id/emergencyContactNumberField"
+        android:id="@+id/emergencyPhoneNumberField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:hint="+XX XXX-XXXX-XXXX"
+        android:hint="@string/emergency_phone_number_hint"
         android:inputType="phone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/emergencyContactNumberLabel"
-        app:layout_constraintTop_toBottomOf="@+id/emergencyContactNumberLabel" />
+        app:layout_constraintStart_toStartOf="@+id/emergencyPhoneNumberLabel"
+        app:layout_constraintTop_toBottomOf="@+id/emergencyPhoneNumberLabel" />
 
     <TextView
         android:id="@+id/emergencyContactMessageLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Emergency contact number:"
+        android:text="@string/emergency_message"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="@+id/emergencyContactTitle"
-        app:layout_constraintTop_toBottomOf="@id/emergencyContactNumberField" />
+        app:layout_constraintTop_toBottomOf="@id/emergencyPhoneNumberField" />
 
     <EditText
         android:id="@+id/emergencyContactMessageField"
@@ -66,7 +66,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:hint="Message to send"
+        android:hint="@string/emergency_message_hint"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/emergencyContactMessageLabel"
