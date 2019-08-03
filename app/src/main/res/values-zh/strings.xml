@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">夜跑</string>
+    <string name="default_emergency_contact_message">我遇到麻烦了！</string>
+    <string name="delete">删除</string>
+    <string name="lets_start_running">让我们开始吧！</string>
+    <string name="start">开始</string>
+    <string name="stop">停止</string>
+    <string name="you_are_running">正在跑步</string>
+    <string name="log_list">历史记录</string>
+    <string name="settings">设置</string>
+    <string name="emergency_call">拨打紧急联系电话</string>
+</resources>

@@ -30,11 +30,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         mapView.onCreate(this, savedInstanceState)
 
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+
         logListButton.setOnClickListener {
             startActivity(Intent(this, LogListActivity::class.java))
         }
@@ -159,12 +161,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateButton(isRunning: Boolean) {
         if (!isRunning) {
-            controlButton.text = "Start"
+            controlButton.text = getString(R.string.start)
             controlButton.setOnClickListener {
                 binder?.startRunning()
             }
         } else {
-            controlButton.text = "Stop"
+            controlButton.text = getString(R.string.stop)
             controlButton.setOnClickListener {
                 saveRunningLogWithCheck()
                 binder?.stopRunning()
@@ -175,9 +177,9 @@ class MainActivity : AppCompatActivity() {
     private fun updateInfoText() {
         binder?.run {
             if (isRunning) {
-                titleTextView.text = "You are running"
+                titleTextView.text = getString(R.string.you_are_running)
             } else {
-                titleTextView.text = "Let's start running!"
+                titleTextView.text = getString(R.string.lets_start_running)
             }
             infoTextView.text = "" +
                     "nowStepCount=$runningStepCount\n" +
