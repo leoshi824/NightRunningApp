@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity() {
             emergencyButton.visibility = View.GONE
         }
 
-
-
         startServiceWithPermissionRequest()
     }
 
@@ -77,6 +75,11 @@ class MainActivity : AppCompatActivity() {
         mapView.onPause()
     }
 
+    override fun onStop() {
+        super.onStop()
+        stopService()
+    }
+
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
         mapView.onSaveInstanceState(outState)
@@ -85,7 +88,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
-        stopService()
     }
 
 
