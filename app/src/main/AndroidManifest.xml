@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".LogActivity" />
+        <activity android:name=".LogListActivity" />
+        <activity android:name=".SettingsActivity" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"

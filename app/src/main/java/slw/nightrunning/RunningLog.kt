@@ -1,5 +1,6 @@
 package slw.nightrunning
 
+import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import java.io.DataInputStream
@@ -11,10 +12,43 @@ import java.io.OutputStream
 data class RunningLog(val stepCount: Int, val route: List<Location>) {
     val startTime get() = route.first().time
     val stopTime get() = route.last().time
-    val filename get() = "$startTime-$stopTime"
+    val timeSpan get() = stopTime - startTime
 }
 
 const val version = 1
+
+fun Context.saveRunningLog(runningLog: RunningLog): String? {
+    val dir = getDir("runningLogs", Context.MODE_PRIVATE)
+    val filename = "${runningLog.startTime}-${runningLog.stopTime}"
+    val file = dir.resolve(filename)
+    return try {
+        file.outputStream().use { it.writeRunningLog(runningLog) }
+        filename
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun Context.loadRunningLog(filename: String): RunningLog? {
+    val dir = getDir("runningLogs", Context.MODE_PRIVATE)
+    val file = dir.resolve(filename)
+    return try {
+        file.inputStream().use { it.readRunningLog() }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+fun Context.deleteRunningLog(filename: String): Boolean {
+    val dir = getDir("runningLogs", Context.MODE_PRIVATE)
+    val file = dir.resolve(filename)
+    return try {
+        file.delete()
+    } catch (e: Exception) {
+        false
+    }
+}
 
 fun OutputStream.writeRunningLog(runningLog: RunningLog) = DataOutputStream(this).writeRunningLog(runningLog)
 
@@ -23,6 +57,7 @@ fun InputStream.readRunningLog(): RunningLog = DataInputStream(this).readRunning
 fun DataOutputStream.writeRunningLog(runningLog: RunningLog) = DataOutputStream(this).run {
     writeInt(version)
     writeInt(runningLog.stepCount)
+    writeInt(runningLog.route.size)
     runningLog.route.forEach(this::writeLocation)
 }
 
