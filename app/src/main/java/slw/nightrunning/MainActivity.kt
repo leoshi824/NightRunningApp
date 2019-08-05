@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        startServiceWithPermissionRequest()
         mapView.onCreate(this, savedInstanceState)
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -36,6 +35,11 @@ class MainActivity : AppCompatActivity() {
         logListButton.setOnClickListener {
             startActivity(Intent(this, LogListActivity::class.java))
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        startServiceWithPermissionRequest()
     }
 
     override fun onResume() {
@@ -54,10 +58,14 @@ class MainActivity : AppCompatActivity() {
         mapView.onSaveInstanceState(outState)
     }
 
+    override fun onStop() {
+        super.onStop()
+        stopService()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
-        stopService()
     }
 
 
