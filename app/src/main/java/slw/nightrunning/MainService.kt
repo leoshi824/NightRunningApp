@@ -37,6 +37,10 @@ class MainService : Service() {
         super.onDestroy()
         sensorManager.unregisterListener(stepCountListener)
         locationManager.removeUpdates(locationListener)
+        if (binder.isRunning) {
+            val log = binder.stopRunning()
+            if (log.route.size >= 2) saveRunningLog(log)
+        }
     }
 
 

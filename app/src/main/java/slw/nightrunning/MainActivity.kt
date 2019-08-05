@@ -28,19 +28,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         startServiceWithPermissionRequest()
-
         mapView.onCreate(this, savedInstanceState)
-
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-
         logListButton.setOnClickListener {
             startActivity(Intent(this, LogListActivity::class.java))
         }
-
     }
 
     override fun onResume() {
@@ -63,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         mapView.onDestroy()
         stopService()
-
     }
 
 
@@ -152,8 +146,7 @@ class MainActivity : AppCompatActivity() {
             titleTextView.text = getString(R.string.you_are_running)
             controlButton.text = getString(R.string.stop)
             controlButton.setOnClickListener {
-                saveRunningLogWithCheck()
-                binder?.stopRunning()
+                stopRunningAndSaveAndShow()
             }
         }
     }
@@ -198,7 +191,9 @@ class MainActivity : AppCompatActivity() {
             val phoneNumber = emergencyPhoneNumber
             var message = emergencyMessage
             emergencyButton.setOnLongClickListener {
-                binder?.nowLocation?.let { location -> message += "\n" + location.toString() }
+                binder?.nowLocation?.let {
+                    message += "\n" + it.run { getString(R.string.info_gps, latitude, longitude, altitude) }
+                }
                 makeEmergencyCall(phoneNumber, message)
                 false
             }
@@ -208,7 +203,7 @@ class MainActivity : AppCompatActivity() {
 
     // other actions
 
-    private fun saveRunningLogWithCheck(): Boolean {
+    private fun stopRunningAndSaveAndShow(): Boolean {
         val log = binder?.stopRunning() ?: return false
         if (log.route.size < 2) {
             Toast.makeText(this, getString(R.string.got_few_data), Toast.LENGTH_LONG)
@@ -223,8 +218,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeEmergencyCall(number: String, message: String) {
-        SmsManager.getDefault().sendTextMessage(number, null, message, null, null)
-        startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$number")))
+        try {
+            SmsManager.getDefault().sendTextMessage(number, null, message, null, null)
+            startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$number")))
+        } catch (e: Exception) {
+            Toast.makeText(this, getString(R.string.phone_number_incorrect), Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
 }

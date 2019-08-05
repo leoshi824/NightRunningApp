@@ -21,4 +21,5 @@
     <string name="settings">设置</string>
     <string name="info_gps">纬度：%.6f°\n经度：%.6f°\n海拔：%.0f米</string>
     <string name="info_run">时长：%s\n步数：%d\n路程：%.0f米</string>
+    <string name="phone_number_incorrect">出现了错误，可能电话号码不正确！</string>
 </resources>

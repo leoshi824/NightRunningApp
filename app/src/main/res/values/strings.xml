@@ -20,4 +20,5 @@
     <string name="history">History</string>
     <string name="info_gps">latitude = %.6f°\nlongitude = %.6f°\naltitude = %.0f m</string>
     <string name="info_run">timeSpan = %s\nstepCount = %d\nrouteLength = %.0f m</string>
+    <string name="phone_number_incorrect">Something went wrong! Maybe your phone number is not correct!</string>
 </resources>
