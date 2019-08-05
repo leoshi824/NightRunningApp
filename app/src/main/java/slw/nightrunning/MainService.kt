@@ -103,7 +103,7 @@ class MainService : Service() {
             build()
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            startForeground(Service.STOP_FOREGROUND_REMOVE, notification)
+            startForeground(STOP_FOREGROUND_REMOVE, notification)
         } else {
             startForeground(1, notification)
         }
@@ -111,7 +111,7 @@ class MainService : Service() {
 
     fun hideNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            stopForeground(1)
+            stopForeground(STOP_FOREGROUND_REMOVE)
         } else {
             stopForeground(true)
         }
