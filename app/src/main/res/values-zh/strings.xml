@@ -22,4 +22,8 @@
     <string name="info_gps">纬度：%.6f°\n经度：%.6f°\n海拔：%.0f米</string>
     <string name="info_run">时长：%s\n步数：%d\n路程：%.0f米</string>
     <string name="phone_number_incorrect">出现了错误，可能电话号码不正确！</string>
+    <string name="no">不！</string>
+    <string name="yes">是的</string>
+    <string name="are_you_sure_to_delete_this_log">确定要删除这条记录吗？</string>
+    <string name="delete_confirm">删除确认</string>
 </resources>

@@ -3,6 +3,7 @@ package slw.nightrunning
 import android.location.Location
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import com.baidu.mapapi.map.MapStatusUpdateFactory
 import kotlinx.android.synthetic.main.activity_log.*
@@ -41,8 +42,15 @@ class LogActivity : AppCompatActivity() {
         }
 
         deleteButton.setOnClickListener {
-            deleteRunningLog(filename)
-            finish()
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.delete_confirm))
+                .setMessage(getString(R.string.are_you_sure_to_delete_this_log))
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    deleteRunningLog(filename)
+                    finish()
+                }
+                .setNegativeButton(getString(R.string.no), null)
+                .show()
         }
     }
 
