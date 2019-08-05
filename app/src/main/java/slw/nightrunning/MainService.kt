@@ -1,6 +1,10 @@
 package slw.nightrunning
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -16,6 +20,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.os.Binder
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.ContextCompat.checkSelfPermission
 
@@ -46,7 +51,10 @@ class MainService : Service() {
 
     // binder
 
-    val binder = MainServiceBinder()
+    val binder = object : MainServiceBinder() {
+        override fun onStartedRunning() = showNotification()
+        override fun onStoppedRunning() = hideNotification()
+    }
 
     override fun onBind(intent: Intent): MainServiceBinder = binder
 
@@ -78,9 +86,40 @@ class MainService : Service() {
     }
 
 
+    // notification
+
+    fun showNotification() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("running", "running", IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(channel)
+            Notification.Builder(this, "running")
+        } else {
+            Notification.Builder(this)
+        }
+        val notification = builder.run {
+            setContentTitle("测试服务")
+            setContentText("我正在运行")
+            build()
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            startForeground(Service.STOP_FOREGROUND_REMOVE, notification)
+        } else {
+            startForeground(1, notification)
+        }
+    }
+
+    fun hideNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(1)
+        } else {
+            stopForeground(true)
+        }
+    }
+
 }
 
-class MainServiceBinder : Binder() {
+abstract class MainServiceBinder : Binder() {
 
     var isRunning = false
         private set(value) {
@@ -99,13 +138,18 @@ class MainServiceBinder : Binder() {
 
     fun startRunning() {
         isRunning = true
+        onStartedRunning()
     }
 
     fun stopRunning(): RunningLog {
         val log = RunningLog(runningStepCount, runningRoute)
         isRunning = false
+        onStoppedRunning()
         return log
     }
+
+    abstract fun onStartedRunning()
+    abstract fun onStoppedRunning()
 
 
     var nowStepCount: Int = -1
