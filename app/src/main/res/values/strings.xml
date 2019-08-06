@@ -4,7 +4,7 @@
     <string name="delete">Delete</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
-    <string name="you_are_running">You are running (click to view)</string>
+    <string name="you_are_running">You are running</string>
     <string name="lets_start_running">Let\'s start running!</string>
     <string name="settings">Settings</string>
     <string name="log_list">Log List</string>
@@ -26,5 +26,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="running">running</string>
-    <string name="notification_message_running">You are running</string>
+    <string name="notification_message_running">You are running (click to view)</string>
 </resources>

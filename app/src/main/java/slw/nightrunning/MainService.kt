@@ -110,6 +110,7 @@ class MainService : Service() {
             notificationManager.createNotificationChannel(channel)
             Notification.Builder(this, NotificationChannelId_running)
         } else {
+            @Suppress("DEPRECATION")
             Notification.Builder(this)
         }
 

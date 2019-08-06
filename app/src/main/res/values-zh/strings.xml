@@ -6,7 +6,7 @@
     <string name="lets_start_running">让我们开始吧！</string>
     <string name="start">开始</string>
     <string name="stop">停止</string>
-    <string name="you_are_running">正在跑步（点击查看）</string>
+    <string name="you_are_running">正在跑步</string>
     <string name="log_list">历史记录</string>
     <string name="emergency_call">拨打紧急联系电话</string>
     <string name="emergency_contact">紧急联系</string>
@@ -27,5 +27,5 @@
     <string name="are_you_sure_to_delete_this_log">确定要删除这条记录吗？</string>
     <string name="delete_confirm">删除确认</string>
     <string name="running">正在跑步</string>
-    <string name="notification_message_running">正在跑步</string>
+    <string name="notification_message_running">正在跑步（点击查看）</string>
 </resources>
