@@ -71,13 +71,14 @@ class MainActivity : AppCompatActivity() {
 
     // service & binder
 
-    var binder: MainServiceBinder? = null
+    private val binder: MainServiceBinder? get() = serviceConnection.binder
 
     private val serviceConnection = object : ServiceConnection {
 
+        var binder: MainServiceBinder? = null
+
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            service as MainServiceBinder
-            this@MainActivity.binder = service
+            this.binder = service as MainServiceBinder
             service.apply {
                 onStateUpdated = {
                     updateControlButton()
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                     updateMapView()
                     updateInfoText()
                 }
+                hideNotification()
             }
         }
 
@@ -98,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                 onStateUpdated = null
                 onStepCountUpdated = null
                 onLocationUpdated = null
+                if (isRunning) showNotification()
             }
             binder = null
         }
@@ -115,6 +118,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopService() {
         val isRunning = binder?.isRunning ?: false
+        serviceConnection.onServiceDisconnected(null)
         unbindService(serviceConnection)
         if (!isRunning) stopService(Intent(this, MainService::class.java))
     }

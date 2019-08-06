@@ -4,7 +4,9 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.NotificationManager.IMPORTANCE_HIGH
+import android.app.NotificationManager.IMPORTANCE_LOW
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.PendingIntent.getActivity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -25,6 +27,10 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat.checkSelfPermission
 
 class MainService : Service() {
+
+    companion object {
+        const val NotificationChannelId_running = "slw.nightrunning:running"
+    }
 
     // lifecycle
 
@@ -52,8 +58,8 @@ class MainService : Service() {
     // binder
 
     val binder = object : MainServiceBinder() {
-        override fun onStartedRunning() = showNotification()
-        override fun onStoppedRunning() = hideNotification()
+        override fun showNotification() = this@MainService.showNotification()
+        override fun hideNotification() = this@MainService.hideNotification()
     }
 
     override fun onBind(intent: Intent): MainServiceBinder = binder
@@ -88,33 +94,48 @@ class MainService : Service() {
 
     // notification
 
-    fun showNotification() {
+    private var notificationShowing = false
+
+    private fun showNotification() {
+        if (notificationShowing) return
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        val pendingIntent = getActivity(this, 1, intent, FLAG_UPDATE_CURRENT)
+
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("running", "running", IMPORTANCE_HIGH)
+            val channel =
+                NotificationChannel(NotificationChannelId_running, getString(R.string.running), IMPORTANCE_LOW)
             notificationManager.createNotificationChannel(channel)
-            Notification.Builder(this, "running")
+            Notification.Builder(this, NotificationChannelId_running)
         } else {
             Notification.Builder(this)
         }
+
         val notification = builder.run {
-            setContentTitle("测试服务")
-            setContentText("我正在运行")
+            setSmallIcon(R.mipmap.ic_launcher)
+            setContentTitle("You are running")
+            setContentIntent(pendingIntent)
             build()
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             startForeground(STOP_FOREGROUND_REMOVE, notification)
         } else {
             startForeground(1, notification)
         }
+        notificationShowing = true
     }
 
-    fun hideNotification() {
+    private fun hideNotification() {
+        if (!notificationShowing) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             stopForeground(STOP_FOREGROUND_REMOVE)
         } else {
             stopForeground(true)
         }
+        notificationShowing = false
     }
 
 }
@@ -138,19 +159,13 @@ abstract class MainServiceBinder : Binder() {
 
     fun startRunning() {
         isRunning = true
-        onStartedRunning()
     }
 
     fun stopRunning(): RunningLog {
         val log = RunningLog(runningStepCount, runningRoute)
         isRunning = false
-        onStoppedRunning()
         return log
     }
-
-    abstract fun onStartedRunning()
-    abstract fun onStoppedRunning()
-
 
     var nowStepCount: Int = -1
         set(value) {
@@ -183,5 +198,10 @@ abstract class MainServiceBinder : Binder() {
 
     var runningRoute = ArrayList<Location>()
         private set
+
+
+    abstract fun showNotification()
+
+    abstract fun hideNotification()
 
 }

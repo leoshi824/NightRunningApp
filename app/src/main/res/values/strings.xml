@@ -25,4 +25,5 @@
     <string name="are_you_sure_to_delete_this_log">Are you sure to delete this log?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="running">running</string>
 </resources>
