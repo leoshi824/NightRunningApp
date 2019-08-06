@@ -26,5 +26,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="running">running</string>
-    <string name="notification_message_running">You are running (click to view)</string>
+    <string name="notification_title_running">Running</string>
+    <string name="notification_message_click_to_view">click to view more options</string>
 </resources>

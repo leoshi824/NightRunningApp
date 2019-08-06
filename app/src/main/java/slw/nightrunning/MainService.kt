@@ -116,7 +116,8 @@ class MainService : Service() {
 
         val notification = builder.run {
             setSmallIcon(R.drawable.ic_notification_running)
-            setContentTitle(getString(R.string.notification_message_running))
+            setContentTitle(getString(R.string.notification_title_running))
+            setContentText(getString(R.string.notification_message_click_to_view))
             setContentIntent(pendingIntent)
             build()
         }

@@ -27,5 +27,6 @@
     <string name="are_you_sure_to_delete_this_log">确定要删除这条记录吗？</string>
     <string name="delete_confirm">删除确认</string>
     <string name="running">正在跑步</string>
-    <string name="notification_message_running">正在跑步（点击查看）</string>
+    <string name="notification_title_running">正在跑步</string>
+    <string name="notification_message_click_to_view">点击查看更多选项</string>
 </resources>
