@@ -29,4 +29,8 @@
     <string name="running">正在跑步</string>
     <string name="notification_title_running">正在跑步</string>
     <string name="notification_message_click_to_view">点击查看更多选项</string>
+    <string name="all_right">好吧…</string>
+    <string name="no_way">没门！</string>
+    <string name="location_not_granted_title">无法使用定位</string>
+    <string name="location_not_granted_message">没有被授予定位的权限，此应用将无法工作。</string>
 </resources>

@@ -28,4 +28,8 @@
     <string name="running">running</string>
     <string name="notification_title_running">Running</string>
     <string name="notification_message_click_to_view">click to view more options</string>
+    <string name="location_not_granted_title">Location not accessible!</string>
+    <string name="location_not_granted_message">Not granted permission to access your location! This app will not work properly!</string>
+    <string name="all_right">All right!</string>
+    <string name="no_way">No way!</string>
 </resources>

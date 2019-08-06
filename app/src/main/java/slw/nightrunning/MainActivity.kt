@@ -134,10 +134,10 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 0) {
             if (!startService()) {
                 AlertDialog.Builder(this)
-                    .setTitle("Location not accessible!")
-                    .setMessage("Not granted permission to access nowLocation! This app will not work properly!")
-                    .setPositiveButton("All right!") { _, _ -> startServiceWithPermissionRequest() }
-                    .setNegativeButton("No way!") { _, _ -> finish() }
+                    .setTitle(getString(R.string.location_not_granted_title))
+                    .setMessage(getString(R.string.location_not_granted_message))
+                    .setPositiveButton(getString(R.string.all_right)) { _, _ -> startServiceWithPermissionRequest() }
+                    .setNegativeButton(getString(R.string.no_way)) { _, _ -> finish() }
                     .show()
             }
         }
