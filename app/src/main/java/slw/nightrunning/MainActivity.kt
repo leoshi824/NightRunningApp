@@ -175,16 +175,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateMapView() = binder?.run {
-        mapView.map.let { map ->
-            map.clear()
-            nowLocation?.toLatLng()?.let { latLng ->
-                map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
-                map.addLocationPoint(latLng)
-            }
-            runningRoute.takeIf { it.size >= 2 }?.let { route ->
-                map.addRouteLines(route.map(Location::toLatLng))
-            }
+        val map = mapView.map
+
+        map.clear()
+        nowLocation?.toLatLng()?.let { latLng ->
+            mapView.visibility = View.VISIBLE
+            locatingLabel.visibility = View.GONE
+            map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
+            map.addLocationPoint(latLng)
         }
+
+        runningRoute.takeIf { it.size >= 2 }?.let { route ->
+            map.addRouteLines(route.map(Location::toLatLng))
+        }
+
     }
 
     private fun updateEmergencyButton() = getSettingsPreferences().run {
