@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
@@ -17,7 +16,7 @@ import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
 import android.view.View
 import android.widget.Toast
-import com.baidu.mapapi.map.MapStatusUpdateFactory
+import com.baidu.mapapi.map.MapStatusUpdateFactory.newLatLngZoom
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -175,20 +174,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateMapView() = binder?.run {
-        val map = mapView.map
-
-        map.clear()
-        nowLocation?.toLatLng()?.let { latLng ->
+        if (nowLocation != null) {
             mapView.visibility = View.VISIBLE
+            infoPanel.visibility = View.VISIBLE
             locatingLabel.visibility = View.GONE
-            map.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
-            map.addLocationPoint(latLng)
+        } else {
+            mapView.visibility = View.GONE
+            infoPanel.visibility = View.GONE
+            locatingLabel.visibility = View.VISIBLE
         }
 
-        runningRoute.takeIf { it.size >= 2 }?.let { route ->
-            map.addRouteLines(route.map(Location::toLatLng))
+        val map = mapView.map
+        map.clear()
+        if (runningRoute.size >= 2) {
+            val latLngList = runningRoute.map { it.toLatLng() }
+            map.addRouteLines(latLngList)
+            map.addStartPoint(latLngList.first())
+            map.addLivePoint(latLngList.last())
+            mapView.zoomToViewRoute(runningRoute)
+        } else {
+            nowLocation?.toLatLng()?.let { latLng ->
+                map.addLivePoint(latLng)
+                map.setMapStatus(newLatLngZoom(latLng, 18f))
+            }
         }
-
     }
 
     private fun updateEmergencyButton() = getSettingsPreferences().run {

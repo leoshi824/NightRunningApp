@@ -40,6 +40,7 @@ class MainService : Service() {
         sensorManager.registerListener(stepCountListener, stepCountSensor, SENSOR_DELAY_NORMAL)
         if (checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 5f, locationListener)
+            locationManager.getLastKnownLocation(GPS_PROVIDER)?.let { locationListener.onLocationChanged(it) }
         }
     }
 

@@ -1,11 +1,9 @@
 package slw.nightrunning
 
-import android.location.Location
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import com.baidu.mapapi.map.MapStatusUpdateFactory
 import kotlinx.android.synthetic.main.activity_log.*
 
 class LogActivity : AppCompatActivity() {
@@ -25,14 +23,12 @@ class LogActivity : AppCompatActivity() {
         }
 
         mapView.map.apply {
-            val latLngList = runningLog.route.map(Location::toLatLng)
-            val latLng = latLngList.last()
-
-            clear()
-            setMapStatus(MapStatusUpdateFactory.newLatLngZoom(latLng, 18f))
+            val latLngList = runningLog.route.map { it.toLatLng() }
             addRouteLines(latLngList)
-            addLocationPoint(latLng)
+            addStartPoint(latLngList.first())
+            addEndPoint(latLngList.last())
         }
+        mapView.post { mapView.zoomToViewRoute(runningLog.route) }
 
         titleTextView.text = filename.parseAsRunningLogFilename().timeSpanDescription()
 
