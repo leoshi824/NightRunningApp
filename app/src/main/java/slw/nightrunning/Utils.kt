@@ -9,10 +9,8 @@ import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.utils.CoordinateConverter
 import com.baidu.mapapi.utils.CoordinateConverter.CoordType.GPS
 import java.util.*
-import kotlin.math.log10
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.roundToInt
+import kotlin.math.*
+
 
 val List<Location>.geoLength: Double
     get() = (1 until size).sumByDouble { this[it - 1].distanceTo(this[it]).toDouble() }
@@ -52,6 +50,10 @@ fun List<Location>.zone(): Triple<Float, Float, Location> {
     return Triple(distanceNS, distanceEW, pointCenter)
 }
 
+fun Location.velocityTo(other: Location): Float {
+    val seconds = (other.time - this.time).absoluteValue.toFloat() / 1000.0f
+    return other.distanceTo(this) / seconds
+}
 
 fun Location.toLatLng(): LatLng {
     return gpsToBdl(latitude, longitude)
@@ -63,6 +65,7 @@ fun gpsToBdl(latitude: Double, longitude: Double): LatLng {
         .coord(LatLng(latitude, longitude))
         .convert()
 }
+
 
 fun BaiduMap.addLivePoint(latLng: LatLng) {
     val circleOptions = CircleOptions()
@@ -91,13 +94,25 @@ fun BaiduMap.addStartPoint(latLng: LatLng) {
     addOverlay(circleOptions)
 }
 
-fun BaiduMap.addRouteLines(route: List<LatLng>) {
+fun BaiduMap.addRoutePolyline(route: List<Location>) {
+    val velocityList = (1 until route.size).map { route[it].velocityTo(route[it - 1]) }
+    val colorList = velocityList.map { it.coerceIn(0f, 8f) }.map { v ->
+        if (v < 3f) {
+            val r = v / 3f
+            Color.rgb((r * 255).roundToInt(), 0, ((1 - r) * 255).roundToInt())
+        } else {
+            val r = (v - 3f) / (8f - 3f)
+            Color.rgb(255, (r * 255).roundToInt(), 0)
+        }
+    }
+    val latLngList = route.map { it.toLatLng() }
     val polylineOptions = PolylineOptions()
-        .points(route)
-        .color(Color.BLUE)
-        .width(7)
+        .points(latLngList)
+        .colorsValues(colorList)
+        .width(10)
     addOverlay(polylineOptions)
 }
+
 
 fun MapView.zoomToViewRoute(route: List<Location>, maxZoom: Float = 18f, minZoom: Float = 4f) {
     val (distanceNS, distanceEW, pointCenter) = route.zone()
@@ -128,6 +143,7 @@ fun pxToDp(context: Context, dp: Int): Float {
     val d = context.resources.displayMetrics.density
     return dp.toFloat() / d
 }
+
 
 fun Pair<Calendar, Calendar>.timeSpanDescription(): String {
     val sb = StringBuilder()

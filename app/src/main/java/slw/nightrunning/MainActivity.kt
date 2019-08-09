@@ -209,10 +209,9 @@ class MainActivity : AppCompatActivity() {
         val map = mapView.map
         map.clear()
         if (runningRoute.size >= 2) {
-            val latLngList = runningRoute.map { it.toLatLng() }
-            map.addRouteLines(latLngList)
-            map.addStartPoint(latLngList.first())
-            map.addLivePoint(latLngList.last())
+            map.addRoutePolyline(runningRoute)
+            map.addStartPoint(runningRoute.first().toLatLng())
+            map.addEndPoint(runningRoute.last().toLatLng())
             mapView.zoomToViewRoute(runningRoute)
         } else {
             nowLocation?.toLatLng()?.let { latLng ->

@@ -23,10 +23,10 @@ class LogActivity : AppCompatActivity() {
         }
 
         mapView.map.apply {
-            val latLngList = runningLog.route.map { it.toLatLng() }
-            addRouteLines(latLngList)
-            addStartPoint(latLngList.first())
-            addEndPoint(latLngList.last())
+            val route = runningLog.route
+            addRoutePolyline(route)
+            addStartPoint(route.first().toLatLng())
+            addEndPoint(route.last().toLatLng())
         }
         mapView.post { mapView.zoomToViewRoute(runningLog.route) }
 
