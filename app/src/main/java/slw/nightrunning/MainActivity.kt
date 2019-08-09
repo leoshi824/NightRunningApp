@@ -18,6 +18,7 @@ import android.view.View
 import android.widget.Toast
 import com.baidu.mapapi.map.MapStatusUpdateFactory.newLatLngZoom
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -80,6 +81,8 @@ class MainActivity : AppCompatActivity() {
             this.binder = service as MainServiceBinder
             service.apply {
                 onStateUpdated = {
+                    if (isRunning) startTimer()
+                    else stopTimer()
                     updateControlButton()
                     updateInfoText()
                 }
@@ -97,6 +100,7 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceDisconnected(name: ComponentName?) {
             binder?.run {
                 onStateUpdated = null
+                stopTimer()
                 onStepCountUpdated = null
                 onLocationUpdated = null
                 if (isRunning) showNotification()
@@ -143,6 +147,24 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    // timer
+
+    private val timer = Timer(true)
+
+    private var task: TimerTask? = null
+
+    private fun startTimer() {
+        task = task ?: timer.schedule(1000L) {
+            infoTextView.post { updateInfoText() }
+        }
+    }
+
+    private fun stopTimer() {
+        task?.cancel()
+        task = null
+    }
+
+
     // views
 
     private fun updateControlButton() {
@@ -166,7 +188,7 @@ class MainActivity : AppCompatActivity() {
         val stringBuilder = StringBuilder()
         nowLocation?.run { stringBuilder.append(getString(R.string.info_gps, latitude, longitude, altitude)) }
         if (isRunning) {
-            val timeString = runningRoute.timeSpan.timeDescription()
+            val timeString = (System.currentTimeMillis() - startTime).timeDescription()
             stringBuilder.appendln()
             stringBuilder.append(getString(R.string.info_run, timeString, runningStepCount, runningRoute.geoLength))
         }

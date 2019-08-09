@@ -180,3 +180,11 @@ fun Long.timeDescription(): String {
         return "%d:%02d:%02d".format(hour, minute, second)
     }
 }
+
+fun Timer.schedule(period: Long, delay: Long = 0L, block: () -> Unit): TimerTask {
+    val timerTask = object : TimerTask() {
+        override fun run() = block()
+    }
+    schedule(timerTask, delay, period)
+    return timerTask
+}

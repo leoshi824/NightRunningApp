@@ -159,15 +159,21 @@ abstract class MainServiceBinder : Binder() {
             value?.invoke(isRunning)
         }
 
-    fun startRunning() {
+    fun startRunning(nowTime: Long = System.currentTimeMillis()) {
         isRunning = true
+        startTime = nowTime
     }
 
-    fun stopRunning(): RunningLog {
-        val log = RunningLog(runningStepCount, runningRoute)
+    fun stopRunning(stopTime: Long = System.currentTimeMillis()): RunningLog {
+        val log = RunningLog(startTime, stopTime, runningStepCount, runningRoute)
+        startTime = -1L
         isRunning = false
         return log
     }
+
+
+    var startTime: Long = -1L
+
 
     var nowStepCount: Int = -1
         set(value) {
