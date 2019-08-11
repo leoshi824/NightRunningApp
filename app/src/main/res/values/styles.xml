@@ -11,6 +11,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="imageButtonStyle">@style/Widget.Button.Borderless</item>
+    </style>
+
+    <style name="Widget.Button.Borderless" parent="AppTheme.Map">
+        <item name="android:background">#00000000</item>
     </style>
 
 </resources>

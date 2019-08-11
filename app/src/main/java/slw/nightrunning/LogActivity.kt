@@ -30,11 +30,11 @@ class LogActivity : AppCompatActivity() {
         }
         mapView.post { mapView.zoomToViewRoute(runningLog.route) }
 
-        titleTextView.text = filename.parseAsRunningLogFilename().timeSpanDescription()
+        titleText.text = filename.parseAsRunningLogFilename().timeSpanDescription()
 
-        infoTextView.text = runningLog.run {
+        infoText.text = runningLog.run {
             val timeString = route.timeSpan.timeDescription()
-            getString(R.string.info_run, timeString, stepCount, route.geoLength)
+            getString(R.string.info_log, timeString, stepCount, route.geoLength)
         }
 
         deleteButton.setOnClickListener {
@@ -48,6 +48,11 @@ class LogActivity : AppCompatActivity() {
                 .setNegativeButton(getString(R.string.no), null)
                 .show()
         }
+
+        backButton.setOnClickListener {
+            finish()
+        }
+
     }
 
     override fun onResume() {

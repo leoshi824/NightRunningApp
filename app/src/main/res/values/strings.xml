@@ -4,8 +4,7 @@
     <string name="delete">Delete</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
-    <string name="you_are_running">You are running</string>
-    <string name="lets_start_running">Let\'s start running!</string>
+    <string name="lets_run">Let\'s run!</string>
     <string name="settings">Settings</string>
     <string name="log_list">Log List</string>
     <string name="emergency_call">Emergency call</string>
@@ -19,13 +18,14 @@
     <string name="long_click_to_make_emergency_call">Long click to make the emergency call!</string>
     <string name="history">History</string>
     <string name="info_gps">latitude = %.6f°\nlongitude = %.6f°\naltitude = %.0f m</string>
-    <string name="info_run">timeSpan = %s\nstepCount = %d\nrouteLength = %.0f m</string>
+    <string name="info_run">stepCount = %d&#160;&#160;&#160;&#160;routeLength = %.0f m</string>
+    <string name="info_log">spanTime = %s\nstepCount = %d\nrouteLength = %.0f m</string>
     <string name="phone_number_incorrect">Something went wrong! Maybe your phone number is not correct!</string>
     <string name="delete_confirm">Deletion confirm</string>
     <string name="are_you_sure_to_delete_this_log">Are you sure to delete this log?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="running">running</string>
+    <string name="running">Running</string>
     <string name="notification_title_running">Running</string>
     <string name="notification_message_click_to_view">click to view more options</string>
     <string name="location_not_granted_title">Location not accessible!</string>

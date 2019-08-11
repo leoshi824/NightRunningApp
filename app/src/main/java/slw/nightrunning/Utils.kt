@@ -96,12 +96,14 @@ fun BaiduMap.addStartPoint(latLng: LatLng) {
 
 fun BaiduMap.addRoutePolyline(route: List<Location>) {
     val velocityList = (1 until route.size).map { route[it].velocityTo(route[it - 1]) }
-    val colorList = velocityList.map { it.coerceIn(0f, 8f) }.map { v ->
-        if (v < 3f) {
-            val r = v / 3f
+    val maxV = 5f
+    val midV = 2f
+    val colorList = velocityList.map { it.coerceIn(0f, maxV) }.map { v ->
+        if (v < midV) {
+            val r = v / midV
             Color.rgb((r * 255).roundToInt(), 0, ((1 - r) * 255).roundToInt())
         } else {
-            val r = (v - 3f) / (8f - 3f)
+            val r = (v - midV) / (maxV - midV)
             Color.rgb(255, (r * 255).roundToInt(), 0)
         }
     }

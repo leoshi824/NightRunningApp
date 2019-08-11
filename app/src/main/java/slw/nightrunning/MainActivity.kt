@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity() {
                 onStateUpdated = {
                     if (isRunning) startTimer()
                     else stopTimer()
-                    updateControlButton()
                     updateInfoText()
+                    updateControlButton()
                 }
                 onStepCountUpdated = {
                     updateInfoText()
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startTimer() {
         task = task ?: timer.schedule(1000L) {
-            infoTextView.post { updateInfoText() }
+            infoText.post { updateInfoText() }
         }
     }
 
@@ -170,14 +170,20 @@ class MainActivity : AppCompatActivity() {
     private fun updateControlButton() {
         val isRunning = binder?.isRunning ?: false
         if (!isRunning) {
-            titleTextView.text = getString(R.string.lets_start_running)
-            controlButton.text = getString(R.string.start)
+            welcomeText.visibility = View.VISIBLE
+            titleText.visibility = View.INVISIBLE
+            infoText.visibility = View.INVISIBLE
+            controlButton.setImageDrawable(resources.getDrawable(R.drawable.ic_start))
+            controlButton.contentDescription = getString(R.string.start)
             controlButton.setOnClickListener {
                 binder?.startRunning()
             }
         } else {
-            titleTextView.text = getString(R.string.you_are_running)
-            controlButton.text = getString(R.string.stop)
+            welcomeText.visibility = View.GONE
+            titleText.visibility = View.VISIBLE
+            infoText.visibility = View.VISIBLE
+            controlButton.setImageDrawable(resources.getDrawable(R.drawable.ic_stop))
+            controlButton.contentDescription = getString(R.string.stop)
             controlButton.setOnClickListener {
                 stopRunningAndSaveAndShow()
             }
@@ -185,24 +191,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateInfoText() = binder?.run {
-        val stringBuilder = StringBuilder()
-        nowLocation?.run { stringBuilder.append(getString(R.string.info_gps, latitude, longitude, altitude)) }
         if (isRunning) {
-            val timeString = (System.currentTimeMillis() - startTime).timeDescription()
-            stringBuilder.appendln()
-            stringBuilder.append(getString(R.string.info_run, timeString, runningStepCount, runningRoute.geoLength))
+            titleText.text = (System.currentTimeMillis() - startTime).timeDescription()
+            infoText.text = getString(R.string.info_run, runningStepCount, runningRoute.geoLength)
+        } else {
+            infoText.text = ""
         }
-        infoTextView.text = stringBuilder
     }
 
     private fun updateMapView() = binder?.run {
         if (nowLocation != null) {
             mapView.visibility = View.VISIBLE
-            infoPanel.visibility = View.VISIBLE
             locatingLabel.visibility = View.GONE
         } else {
-            mapView.visibility = View.GONE
-            infoPanel.visibility = View.GONE
+            mapView.visibility = View.INVISIBLE
             locatingLabel.visibility = View.VISIBLE
         }
 
@@ -211,7 +213,7 @@ class MainActivity : AppCompatActivity() {
         if (runningRoute.size >= 2) {
             map.addRoutePolyline(runningRoute)
             map.addStartPoint(runningRoute.first().toLatLng())
-            map.addEndPoint(runningRoute.last().toLatLng())
+            map.addLivePoint(runningRoute.last().toLatLng())
             mapView.zoomToViewRoute(runningRoute)
         } else {
             nowLocation?.toLatLng()?.let { latLng ->
@@ -241,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                     message += "\n" + it.run { getString(R.string.info_gps, latitude, longitude, altitude) }
                 }
                 makeEmergencyCall(phoneNumber, message)
-                false
+                true
             }
         }
     }

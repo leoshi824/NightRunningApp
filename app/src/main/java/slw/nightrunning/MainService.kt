@@ -160,8 +160,8 @@ abstract class MainServiceBinder : Binder() {
         }
 
     fun startRunning(nowTime: Long = System.currentTimeMillis()) {
-        isRunning = true
         startTime = nowTime
+        isRunning = true
     }
 
     fun stopRunning(stopTime: Long = System.currentTimeMillis()): RunningLog {
