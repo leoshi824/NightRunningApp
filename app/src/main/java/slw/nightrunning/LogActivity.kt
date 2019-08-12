@@ -8,12 +8,16 @@ import kotlinx.android.synthetic.main.activity_log.*
 
 class LogActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_FILENAME = "filename"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log)
         mapView.onCreate(this, savedInstanceState)
 
-        val filename = intent.getStringExtra("filename") ?: run {
+        val filename = intent.getStringExtra(EXTRA_FILENAME) ?: run {
             finish()
             return
         }
@@ -31,9 +35,9 @@ class LogActivity : AppCompatActivity() {
         }
         mapView.post { mapView.zoomToViewRoute(runningLog.route) }
 
-        titleText.text = filename.parseAsRunningLogFilename().timePeriodDescription()
+        titleText.text = parseRunningLogFilename(filename).timePeriodDescription()
         infoText.text = runningLog.run {
-            val timeString = runningLog.run { stopTime - startTime }.timeSpanDescription()
+            val timeString = runningLog.timeSpan.timeSpanDescription()
             val averageSpeed = runningLog.route.averageSpeed
             getString(R.string.info_log, timeString, stepCount, route.geoLength, averageSpeed)
         }

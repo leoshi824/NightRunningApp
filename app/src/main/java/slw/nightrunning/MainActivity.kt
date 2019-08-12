@@ -20,6 +20,7 @@ import android.view.View
 import android.widget.Toast
 import com.baidu.mapapi.map.MapStatusUpdateFactory.newLatLngZoom
 import kotlinx.android.synthetic.main.activity_main.*
+import slw.nightrunning.LogActivity.Companion.EXTRA_FILENAME
 import java.util.*
 
 
@@ -270,7 +271,7 @@ class MainActivity : AppCompatActivity() {
         }
         val filename = saveRunningLog(log) ?: return false
         val intent = Intent(this, LogActivity::class.java)
-        intent.putExtra("filename", filename)
+        intent.putExtra(EXTRA_FILENAME, filename)
         startActivity(intent)
         return true
     }
