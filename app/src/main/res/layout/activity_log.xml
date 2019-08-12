@@ -12,43 +12,61 @@
         android:layout_height="0dp"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintBottom_toTopOf="@id/titleText"
+        app:layout_constraintBottom_toTopOf="@id/titleScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </com.baidu.mapapi.map.MapView>
 
-    <TextView
-        android:id="@+id/titleText"
+
+    <HorizontalScrollView
+        android:id="@+id/titleScrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="4dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toTopOf="@id/infoText"
+        android:padding="8dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/infoScrollView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Log: xx-xx-xx" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
-        android:id="@+id/infoText"
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            tools:text="Log: xx-xx-xx" />
+
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/infoScrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/backButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="RouteLength=100m\nStepCount=100\nEnergy=10kal" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/infoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:lines="2"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="@string/info_log" />
+    </HorizontalScrollView>
+
 
     <ImageButton
         android:id="@+id/deleteButton"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="?android:attr/actionBarItemBackground"
@@ -59,8 +77,8 @@
 
     <ImageButton
         android:id="@+id/backButton"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
         android:background="?android:attr/actionBarItemBackground"

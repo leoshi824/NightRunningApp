@@ -17,9 +17,9 @@
     <string name="emergency_phone_number_hint">+XX XXX-XXXX-XXXX</string>
     <string name="long_click_to_make_emergency_call">Long click to make the emergency call!</string>
     <string name="history">History</string>
-    <string name="info_gps">latitude = %.6f°\nlongitude = %.6f°\naltitude = %.0f m</string>
-    <string name="info_run">stepCount = %d&#160;&#160;&#160;&#160;routeLength = %.0f m</string>
-    <string name="info_log">spanTime = %s\nstepCount = %d\nrouteLength = %.0f m</string>
+    <string name="info_gps">latitude %.6f°\nlongitude %.6f°\naltitude %.0f m</string>
+    <string name="info_run">stepCount %d&#160;&#160;&#160;&#160;routeLength %.0f m&#160;&#160;&#160;&#160;liveSpeed %.1f m/s</string>
+    <string name="info_log">spanTime %s&#160;&#160;&#160;&#160;\nstepCount %d&#160;&#160;&#160;&#160;routeLength %.0f m&#160;&#160;&#160;&#160;averageSpeed %.1f m/s</string>
     <string name="phone_number_incorrect">Something went wrong! Maybe your phone number is not correct!</string>
     <string name="delete_confirm">Deletion confirm</string>
     <string name="are_you_sure_to_delete_this_log">Are you sure to delete this log?</string>

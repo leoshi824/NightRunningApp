@@ -39,13 +39,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:ellipsize="none"
         android:gravity="center"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:singleLine="true"
         android:text="@string/lets_run"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="@id/infoText"
+        app:layout_constraintBottom_toBottomOf="@id/infoScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titleText" />
@@ -58,26 +60,34 @@
         android:paddingStart="8dp"
         android:paddingTop="4dp"
         android:paddingEnd="8dp"
+        android:singleLine="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="40sp"
-        app:layout_constraintBottom_toTopOf="@+id/infoText"
+        app:layout_constraintBottom_toTopOf="@+id/infoScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="00:00" />
 
-    <TextView
-        android:id="@+id/infoText"
-        android:layout_width="0dp"
+
+    <HorizontalScrollView
+        android:id="@+id/infoScrollView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/controlButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/info_run" />
+        app:layout_constraintStart_toStartOf="parent">
 
+        <TextView
+            android:id="@+id/infoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="@string/info_run" />
+    </HorizontalScrollView>
 
     <ImageButton
         android:id="@+id/controlButton"
@@ -92,8 +102,8 @@
 
     <ImageButton
         android:id="@+id/settingsButton"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/settings"
         app:layout_constraintBottom_toBottomOf="@+id/logListButton"
@@ -103,9 +113,9 @@
 
     <ImageButton
         android:id="@+id/logListButton"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="20dp"
         android:contentDescription="@string/history"
         app:layout_constraintBottom_toBottomOf="@+id/controlButton"
         app:layout_constraintEnd_toStartOf="@+id/settingsButton"
@@ -114,8 +124,8 @@
 
     <ImageButton
         android:id="@+id/emergencyButton"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:contentDescription="@string/emergency_call"
         app:layout_constraintBottom_toBottomOf="@+id/controlButton"

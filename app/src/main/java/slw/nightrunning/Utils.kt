@@ -14,11 +14,20 @@ import java.util.*
 import kotlin.math.*
 
 
-val List<Location>.geoLength: Double
-    get() = (1 until size).sumByDouble { this[it - 1].distanceTo(this[it]).toDouble() }
+val List<Location>.geoLength: Float
+    get() {
+        var sum = 0f
+        for (i in 1 until size) {
+            sum += this[i - 1].distanceTo(this[i])
+        }
+        return sum
+    }
 
-val List<Location>.timeSpan: Long
-    get() = if (size != 0) last().time - first().time else 0L
+val List<Location>.liveSpeed: Float
+    get() = if (size >= 2) this[size - 1].velocityTo(this[size - 2]) else 0f
+
+val List<Location>.averageSpeed: Float
+    get() = if (size >= 2) geoLength / (last().time - first().time).toFloat() * 1000f else 0f
 
 fun List<Location>.zone(): Triple<Float, Float, Location> {
     val latN = map { it.latitude }.max()!!
@@ -186,7 +195,7 @@ fun pxToDp(context: Context, dp: Int): Float {
 }
 
 
-fun Pair<Calendar, Calendar>.timeSpanDescription(): String {
+fun Pair<Calendar, Calendar>.timePeriodDescription(): String {
     val sb = StringBuilder()
     sb.append(first.get(Calendar.YEAR), "-")
     sb.append(first.get(Calendar.MONTH), "-")
@@ -214,7 +223,7 @@ fun Pair<Calendar, Calendar>.timeSpanDescription(): String {
     return sb.toString()
 }
 
-fun Long.timeDescription(): String {
+fun Long.timeSpanDescription(): String {
     var time = this
 
 //    val microSecond = time % 1000
@@ -231,10 +240,10 @@ fun Long.timeDescription(): String {
 
 //    val day = time
 
-    if (hour == 0L) {
-        return "%02d:%02d".format(minute, second)
+    return if (hour == 0L) {
+        "%02d:%02d".format(minute, second)
     } else {
-        return "%d:%02d:%02d".format(hour, minute, second)
+        "%d:%02d:%02d".format(hour, minute, second)
     }
 }
 

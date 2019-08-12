@@ -18,9 +18,9 @@
     <string name="history">历史记录</string>
     <string name="long_click_to_make_emergency_call">长按拨打紧急联系电话</string>
     <string name="settings">设置</string>
-    <string name="info_gps">纬度：%.6f°\n经度：%.6f°\n海拔：%.0f米</string>
-    <string name="info_run">步数：%d&#160;&#160;&#160;&#160;&#160;&#160;路程：%.0f米</string>
-    <string name="info_log">时长：%s\n步数：%d\n路程：%.0f米</string>
+    <string name="info_gps">纬度 %.6f°\n经度 %.6f°\n海拔 %.0f米</string>
+    <string name="info_run">步数 %d&#160;&#160;&#160;&#160;路程 %.0f米&#160;&#160;&#160;&#160;速度 %.1f米/秒</string>
+    <string name="info_log">时长 %s\n步数 %d&#160;&#160;&#160;&#160;路程 %.0f米&#160;&#160;&#160;&#160;均速 %.1f米/秒</string>
     <string name="phone_number_incorrect">出现了错误，可能电话号码不正确！</string>
     <string name="no">不！</string>
     <string name="yes">是的</string>

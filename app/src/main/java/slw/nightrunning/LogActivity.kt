@@ -30,11 +30,11 @@ class LogActivity : AppCompatActivity() {
         }
         mapView.post { mapView.zoomToViewRoute(runningLog.route) }
 
-        titleText.text = filename.parseAsRunningLogFilename().timeSpanDescription()
-
+        titleText.text = filename.parseAsRunningLogFilename().timePeriodDescription()
         infoText.text = runningLog.run {
-            val timeString = route.timeSpan.timeDescription()
-            getString(R.string.info_log, timeString, stepCount, route.geoLength)
+            val timeString = runningLog.run { stopTime - startTime }.timeSpanDescription()
+            val averageSpeed = runningLog.route.averageSpeed
+            getString(R.string.info_log, timeString, stepCount, route.geoLength, averageSpeed)
         }
 
         deleteButton.setOnClickListener {

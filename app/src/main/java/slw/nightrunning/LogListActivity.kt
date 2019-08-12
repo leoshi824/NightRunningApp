@@ -23,7 +23,7 @@ class LogListActivity : AppCompatActivity() {
             logListView.visibility = View.VISIBLE
             emptyListLabel.visibility = View.GONE
             val filenames = files.reversed().map { it.name }
-            val fileDescription = filenames.map { it.parseAsRunningLogFilename().timeSpanDescription() }
+            val fileDescription = filenames.map { it.parseAsRunningLogFilename().timePeriodDescription() }
             logListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, fileDescription)
             logListView.setOnItemClickListener { _, _, position, _ ->
                 val filename = filenames[position]

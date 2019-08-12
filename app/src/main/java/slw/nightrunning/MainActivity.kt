@@ -202,10 +202,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateInfoText() = binder?.run {
         if (isRunning) {
-            titleText.text = (System.currentTimeMillis() - startTime).timeDescription()
-            infoText.text = getString(R.string.info_run, runningStepCount, runningRoute.geoLength)
-        } else {
-            infoText.text = ""
+            titleText.text = (System.currentTimeMillis() - startTime).timeSpanDescription()
+            val routeLength = runningRoute.geoLength
+            val liveSpeed = runningRoute.liveSpeed
+            infoText.text = getString(R.string.info_run, runningStepCount, routeLength, liveSpeed)
         }
     }
 
