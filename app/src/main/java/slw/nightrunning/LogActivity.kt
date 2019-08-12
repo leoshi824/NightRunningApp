@@ -55,6 +55,11 @@ class LogActivity : AppCompatActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        setBaiduMapStyleByUiMode()
+    }
+
     override fun onResume() {
         super.onResume()
         mapView.onResume()
@@ -68,6 +73,11 @@ class LogActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
         mapView.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        resetBaiduMapStyle()
     }
 
     override fun onDestroy() {

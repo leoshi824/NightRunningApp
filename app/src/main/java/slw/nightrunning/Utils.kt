@@ -1,10 +1,12 @@
 package slw.nightrunning
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import com.baidu.mapapi.map.*
+import com.baidu.mapapi.map.MapView
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.utils.CoordinateConverter
 import com.baidu.mapapi.utils.CoordinateConverter.CoordType.GPS
@@ -113,6 +115,43 @@ fun BaiduMap.addRoutePolyline(route: List<Location>) {
         .colorsValues(colorList)
         .width(10)
     addOverlay(polylineOptions)
+}
+
+
+private var baiduMapStyleUsingCount = 0
+
+fun cacheBaiduMapStyles(context: Context, cover: Boolean = false) {
+    val fileNames = context.assets.list("baiduMapStyles") ?: arrayOf<String>()
+    val cacheDir = context.cacheDir.resolve("baiduMapStyles").apply {
+        if (cover) deleteRecursively()
+        mkdirs()
+    }
+    fileNames.forEach { fileName ->
+        val cacheFile = cacheDir.resolve(fileName)
+        if (cover || !cacheFile.exists()) {
+            val assetsFilePath = "baiduMapStyles/$fileName"
+            context.assets.open(assetsFilePath).use { inputStream ->
+                cacheFile.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+        }
+    }
+}
+
+fun Activity.initBaiduMapStyle() {
+    cacheBaiduMapStyles(this)
+    MapView.setCustomMapStylePath(cacheDir.resolve("baiduMapStyles").resolve("dark.json").path)
+}
+
+fun Activity.setBaiduMapStyleByUiMode() {
+    val nightModeOn = nightModeOn
+    MapView.setMapCustomEnable(nightModeOn)
+    if (nightModeOn) baiduMapStyleUsingCount++
+}
+
+fun resetBaiduMapStyle() {
+    if (--baiduMapStyleUsingCount == 0) MapView.setMapCustomEnable(false)
 }
 
 

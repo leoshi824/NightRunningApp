@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.os.IBinder
 import android.os.PersistableBundle
 import android.support.v4.app.ActivityCompat.requestPermissions
 import android.support.v4.content.ContextCompat.checkSelfPermission
+import android.support.v4.content.res.ResourcesCompat.getDrawable
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
@@ -20,15 +22,19 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory.newLatLngZoom
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
 
+class MainActivity : AppCompatActivity() {
 
     // lifecycle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initBaiduMapStyle()
         setContentView(R.layout.activity_main)
         mapView.onCreate(this, savedInstanceState)
+
+        mapView.map.uiSettings.setAllGesturesEnabled(false)
+        mapView.showZoomControls(false)
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
@@ -39,13 +45,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        setBaiduMapStyleByUiMode()
         startServiceWithPermissionRequest()
+        updateEmergencyButton(getSettingsPreferences())
     }
 
     override fun onResume() {
         super.onResume()
         mapView.onResume()
-        updateEmergencyButton()
     }
 
     override fun onPause() {
@@ -60,6 +67,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        resetBaiduMapStyle()
         stopService()
     }
 
@@ -173,7 +181,8 @@ class MainActivity : AppCompatActivity() {
             welcomeText.visibility = View.VISIBLE
             titleText.visibility = View.INVISIBLE
             infoText.visibility = View.INVISIBLE
-            controlButton.setImageDrawable(resources.getDrawable(R.drawable.ic_start))
+            logListButton.visibility = View.VISIBLE
+            controlButton.setImageDrawable(getDrawable(resources, R.drawable.ic_start, theme))
             controlButton.contentDescription = getString(R.string.start)
             controlButton.setOnClickListener {
                 binder?.startRunning()
@@ -182,7 +191,8 @@ class MainActivity : AppCompatActivity() {
             welcomeText.visibility = View.GONE
             titleText.visibility = View.VISIBLE
             infoText.visibility = View.VISIBLE
-            controlButton.setImageDrawable(resources.getDrawable(R.drawable.ic_stop))
+            logListButton.visibility = View.INVISIBLE
+            controlButton.setImageDrawable(getDrawable(resources, R.drawable.ic_stop, theme))
             controlButton.contentDescription = getString(R.string.stop)
             controlButton.setOnClickListener {
                 stopRunningAndSaveAndShow()
@@ -223,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateEmergencyButton() = getSettingsPreferences().run {
+    private fun updateEmergencyButton(settingsPreferences: SharedPreferences) = settingsPreferences.run {
         if (!emergencyContactEnabled) {
             emergencyButton.visibility = View.GONE
         } else {

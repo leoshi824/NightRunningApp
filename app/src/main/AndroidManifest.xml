@@ -24,7 +24,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Map">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,15 +37,18 @@
 
         <activity
             android:name=".LogActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Map" />
 
         <activity
             android:name=".LogListActivity"
-            android:label="@string/history" />
+            android:label="@string/history"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/settings" />
+            android:label="@string/settings"
+            android:screenOrientation="portrait" />
 
     </application>
 

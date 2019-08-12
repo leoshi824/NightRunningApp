@@ -2,6 +2,9 @@ package slw.nightrunning
 
 import android.Manifest.permission.CALL_PHONE
 import android.Manifest.permission.SEND_SMS
+import android.app.UiModeManager
+import android.app.UiModeManager.MODE_NIGHT_NO
+import android.app.UiModeManager.MODE_NIGHT_YES
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -16,13 +19,12 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initBaiduMapStyle()
         setContentView(R.layout.activity_settings)
-
-        emergencyContactEnabledCheckBox.isChecked = false
-        emergencyPhoneNumberField.isEnabled = false
-        emergencyContactMessageField.isEnabled = false
-
-        emergencyContactEnabledCheckBox.setOnCheckedChangeListener { _, isChecked ->
+        nightModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            nightModeOn = isChecked
+        }
+        emergencyContactEnabledSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 if (checkSelfPermission(this, SEND_SMS) == PERMISSION_GRANTED
                     && checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED
@@ -30,7 +32,7 @@ class SettingsActivity : AppCompatActivity() {
                     emergencyPhoneNumberField.isEnabled = true
                     emergencyContactMessageField.isEnabled = true
                 } else {
-                    emergencyContactEnabledCheckBox.isChecked = false
+                    emergencyContactEnabledSwitch.isChecked = false
                     requestPermissions(this, arrayOf(SEND_SMS, CALL_PHONE), 0)
                 }
             } else {
@@ -55,27 +57,48 @@ class SettingsActivity : AppCompatActivity() {
         if (requestCode == 0) {
             if (checkSelfPermission(this, SEND_SMS) == PERMISSION_GRANTED
                 && checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED
-            ) emergencyContactEnabledCheckBox.isChecked = true
+            ) emergencyContactEnabledSwitch.isChecked = true
         }
     }
 
 
     private fun loadSettingsPreferences() = getSettingsPreferences().run {
-        emergencyContactEnabledCheckBox.isChecked = emergencyContactEnabled
+        nightModeSwitch.isChecked = nightModeOn
+        emergencyContactEnabledSwitch.isChecked = emergencyContactEnabled
         emergencyPhoneNumberField.setText(emergencyPhoneNumber)
         emergencyContactMessageField.setText(emergencyMessage.takeIf { it.isNotBlank() }
             ?: getString(R.string.default_emergency_contact_message))
     }
 
     private fun saveSettingsPreferences() = getSettingsPreferences().run {
-        emergencyContactEnabled = emergencyContactEnabledCheckBox.isChecked
+        emergencyContactEnabled = emergencyContactEnabledSwitch.isChecked
         emergencyPhoneNumber = emergencyPhoneNumberField.text.toString()
         emergencyMessage = emergencyContactMessageField.text.toString()
     }
 
 }
 
-fun Context.getSettingsPreferences(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+var Context.nightModeOn: Boolean
+    get() {
+        val uiManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        return when (uiManager.nightMode) {
+            MODE_NIGHT_YES -> true
+            MODE_NIGHT_NO -> false
+            else -> {
+                uiManager.nightMode = MODE_NIGHT_NO
+                false
+            }
+        }
+    }
+    set(value) {
+        val uiManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        uiManager.nightMode = if (value) MODE_NIGHT_YES else MODE_NIGHT_NO
+    }
+
+fun Context.getSettingsPreferences(): SharedPreferences {
+    return getSharedPreferences("settings", Context.MODE_PRIVATE)
+}
 
 fun SharedPreferences.edit(block: SharedPreferences.Editor.() -> Unit) {
     val editor = edit()
