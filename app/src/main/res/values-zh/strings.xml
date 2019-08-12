@@ -33,7 +33,7 @@
     <string name="no_way">没门！</string>
     <string name="location_not_granted_title">无法使用定位</string>
     <string name="location_not_granted_message">没有被授予定位的权限，此应用将无法工作。</string>
-    <string name="you_have_no_any_log_yet">没有找到任何记录……\n╮(╯-╰)╭</string>
-    <string name="locating">正在定位……</string>
+    <string name="you_have_no_any_log_yet">没有找到任何记录\n╮(╯-╰)╭</string>
+    <string name="locating">正在定位…</string>
     <string name="use_night_mode">启用夜间模式</string>
 </resources>

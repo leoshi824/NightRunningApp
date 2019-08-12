@@ -23,6 +23,7 @@ class LogActivity : AppCompatActivity() {
         }
 
         mapView.map.apply {
+            uiSettings.isOverlookingGesturesEnabled = false
             val route = runningLog.route
             addRoutePolyline(route)
             addStartPoint(route.first().toLatLng())

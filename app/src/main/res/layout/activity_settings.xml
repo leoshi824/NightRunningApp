@@ -40,13 +40,13 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <TextView
-            android:id="@+id/emergencyContactMessageLabel"
+            android:id="@+id/emergencyPhoneNumberLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/emergency_message"
+            android:text="@string/emergency_contact_phone_number"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <EditText
@@ -61,13 +61,13 @@
             android:inputType="phone" />
 
         <TextView
-            android:id="@+id/emergencyPhoneNumberLabel"
+            android:id="@+id/emergencyContactMessageLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/emergency_contact_phone_number"
+            android:text="@string/emergency_message"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <EditText
